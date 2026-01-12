@@ -98,8 +98,10 @@ router03 nftables_rules_site=another-site...
   become: true
 
   roles:
-    - role: nftablesMake sure that:
+    - role: nftables
 ```
+
+**Make sure that**:
 
 - You have created the appropriate rule files under `files/common/`,
   `files/sites/<site_name>/`, and/or `files/hosts/<inventory_hostname>/`.
