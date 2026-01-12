@@ -1,0 +1,9 @@
+# meta/main.yml
+---
+galaxy_info:
+  role_name: nftables
+  author: life-f0rm
+  description: Manage nftables firewall rules from directory-based configuration
+  license: MIT
+  platforms:
+    - name: Ubuntu

@@ -1,0 +1,14 @@
+---
+
+- name: Validate nftables configuration
+  ansible.builtin.command:
+    cmd: "nft -c -f /etc/nftables.conf"
+  register: nftables_validate_result
+  changed_when: false
+  failed_when: nftables_validate_result.rc != 0
+
+- name: Reload nftables
+  ansible.builtin.service:
+    name: nftables
+    enabled: true
+    state: reloaded

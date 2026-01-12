@@ -1,0 +1,82 @@
+---
+- name: Ensure nftables package is installed
+  ansible.builtin.apt:
+    name: nftables
+    state: present
+    update_cache: true
+
+- name: Ensure nftables service is enabled
+  ansible.builtin.service:
+    name: nftables
+    enabled: true
+    state: started
+
+- name: Ensure nftables.d directory structure exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "/etc/nftables.d"
+    - "/etc/nftables.d/common"
+    - "/etc/nftables.d/site"
+    - "/etc/nftables.d/host"
+
+- name: Ensure nftables site identifier is available
+  ansible.builtin.assert:
+    that:
+      - nftables_rules_site | length > 0
+    fail_msg: >-
+      No nftables site identifier found. Define "nftables_rules_site" for the host.
+
+- name: Deploy main configuration file
+  ansible.builtin.template:
+    src: nftables.conf.j2
+    dest: "/etc/nftables.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Validate nftables configuration
+    - Reload nftables
+
+- name: Deploy common rule files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nftables.d/common/{{ item | basename }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ lookup('fileglob', role_path + '/files/common/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', role_path + '/files/common/*.nft', wantlist=True) | length > 0
+  notify:
+    - Validate nftables configuration
+    - Reload nftables
+
+- name: Deploy site-specific rule files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nftables.d/site/{{ item | basename }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ lookup('fileglob', role_path + '/files/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', role_path + '/files/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | length > 0
+  notify:
+    - Validate nftables configuration
+    - Reload nftables
+
+- name: Deploy host-specific rule files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nftables.d/host/{{ item | basename }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ lookup('fileglob', role_path + '/files/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', role_path + '/files/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | length > 0
+  notify:
+    - Validate nftables configuration
+    - Reload nftables

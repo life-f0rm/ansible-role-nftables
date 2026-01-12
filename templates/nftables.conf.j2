@@ -1,0 +1,12 @@
+#!/usr/sbin/nft -f
+# nftables configuration file
+# This file is managed by Ansible - do not edit manually
+# Site: {{ nftables_rules_site }}
+# Host: {{ inventory_hostname }}
+
+flush ruleset
+
+include "/etc/nftables.d/common/*.nft"
+include "/etc/nftables.d/site/*.nft"
+include "/etc/nftables.d/host/*.nft"
+

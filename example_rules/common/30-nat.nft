@@ -1,0 +1,15 @@
+# 30-nat.nft - common nat table rules
+# this file is managed by ansible - do not edit manually
+
+table ip nat {
+	chain postrouting {
+		type nat hook postrouting priority 100; policy accept;
+		# jump to layer chains (host then site in order)
+		jump postrouting_host
+		jump postrouting_site
+	}
+
+	chain postrouting_host {}
+	chain postrouting_site {}
+
+}

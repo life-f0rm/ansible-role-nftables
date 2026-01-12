@@ -1,0 +1,17 @@
+# 10-raw.nft - common raw table rules
+# this file is managed by ansible - do not edit manually
+
+# raw table - early packet filtering before connection tracking (priority -300)
+table inet raw {
+
+	chain prerouting {
+		type filter hook prerouting priority -300; policy accept;
+		# jump to layer chains (host then site in order)
+		jump prerouting_host
+		jump prerouting_site
+	}
+
+	chain prerouting_host {}
+	chain prerouting_site {}
+
+}

@@ -1,0 +1,2 @@
+# 00-vars.nft - common variables for nftables
+# this file is managed by ansible - do not edit manually

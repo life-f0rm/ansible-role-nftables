@@ -1,0 +1,31 @@
+# 60-filter.nft - common filter table rules
+# this file is managed by ansible - do not edit manually
+
+# filter table - zone-based filtering (priority 0)
+table inet filter {
+
+	chain input {
+		type filter hook input priority 0; policy drop;
+
+		jump input_host
+		jump input_site
+
+	}
+
+	chain input_host {}
+	chain input_site {}
+
+	chain forward {
+		type filter hook forward priority 0; policy drop;
+	}
+
+	chain forward_host {}
+	chain forward_site {}
+
+	chain output {
+		type filter hook output priority 0; policy accept;
+	}
+
+	chain output_host {}
+	chain output_site {}
+}
