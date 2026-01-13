@@ -1,2 +1,14 @@
 # 00-vars.nft - site-specific variables for site0
 # this file is managed by ansible - do not edit manually
+
+define site_lan_interfaces = {
+	"servers"
+}
+
+define site_wan_interfaces = {
+	"isp0"
+}
+
+define site_mgmnt = {
+	"mgmnt"
+}

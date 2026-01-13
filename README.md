@@ -83,22 +83,40 @@ an assertion error.
 
 ### Example inventory snippet
 
-```ini
-[routers]
-router01 nftables_rules_site=example-site01
-router02 nftables_rules_site=example-site01
-router03 nftables_rules_site=another-site...
+```yaml
+all:
+  vars:
+    base_domain: example.com
+  children:
+    us-east: # Region
+      children:
+        az1: # Availability Zone
+          children:
+            s01: # Site
+              vars:
+                nftables_rules_site: "example-site01"
+              hosts:
+                example-router01:
+                  ansible_host: 127.0.0.1
+                example-router02:
+                  ansible_host: 127.0.0.2
+    routers:
+      hosts:
+        example-router01:
+        example-router02:
 ```
 
 ## Example playbook
 
 ```yaml
-- name: Configure nftables on routers
+- name: Firewall nftables configuration on routers
   hosts: routers
   become: true
-
+  gather_facts: true
   roles:
-    - role: nftables
+    - nftables
+  tags:
+    - nftables
 ```
 
 **Make sure that**:

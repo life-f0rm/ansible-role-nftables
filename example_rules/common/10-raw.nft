@@ -4,11 +4,106 @@
 # raw table - early packet filtering before connection tracking (priority -300)
 table inet raw {
 
+	# interface groups (list is defined here, interfaces are defined per router)
+	set wan_interfaces {
+		type ifname
+	}
+
+	# address sets for bad ipv4 addresses (rfc 6890)
+	set bad_ipv4 {
+		type ipv4_addr
+		flags interval
+		elements = $bad_ipv4
+	}
+	set not_global_ipv4 {
+		type ipv4_addr
+		flags interval
+		elements = $not_global_ipv4
+	}
+	set bad_src_ipv4 {
+		type ipv4_addr
+		flags interval
+		elements = $bad_src_ipv4
+	}
+	set bad_dst_ipv4 {
+		type ipv4_addr
+		flags interval
+		elements = $bad_dst_ipv4
+	}
+
+	# bad ipv6 addresses (rfc 6890)
+	set bad_ipv6 {
+		type ipv6_addr
+		flags interval
+		elements = $bad_ipv6
+	}
+	set not_global_ipv6 {
+		type ipv6_addr
+		flags interval
+		elements = $not_global_ipv6
+	}
+	set bad_src_ipv6 {
+		type ipv6_addr
+		flags interval	
+		elements = $bad_src_ipv6
+	}
+	set bad_dst_ipv6 {
+		type ipv6_addr
+		flags interval
+		elements = $bad_dst_ipv6
+	}
+
 	chain prerouting {
-		type filter hook prerouting priority -300; policy accept;
+		type filter hook prerouting priority raw; policy accept;
 		# jump to layer chains (host then site in order)
 		jump prerouting_host
 		jump prerouting_site
+
+		iifname @wan_interfaces meta nfproto ipv4 jump raw_wan4
+		iifname @wan_interfaces meta nfproto ipv6 jump raw_wan6
+		meta nfproto ipv4 jump raw_ip4
+		meta nfproto ipv6 jump raw_ip6
+
+		# common rules below
+
+		# drop bad udp (port 0, universal)
+		udp sport 0 counter drop
+		udp dport 0 counter drop
+	}
+
+	chain raw_ip4 {
+		# Bogon src/dst (v4)
+		ip saddr @bad_ipv4 counter drop
+		ip daddr @bad_ipv4 counter drop
+		ip saddr @bad_src_ipv4 counter drop
+		ip daddr @bad_dst_ipv4 counter drop
+	}
+
+	chain raw_ip6 {
+		# Bogon src/dst (v6)
+		ip6 saddr @bad_ipv6 counter drop
+		ip6 daddr @bad_ipv6 counter drop
+		ip6 saddr @bad_src_ipv6 counter drop
+		ip6 daddr @bad_dst_ipv6 counter drop
+	}
+
+	chain raw_wan4 {
+		ip saddr @not_global_ipv4 counter drop
+		ip daddr @not_global_ipv4 counter drop
+	}
+
+	chain raw_wan6 {
+		ip6 saddr @not_global_ipv6 counter drop
+		ip6 daddr @not_global_ipv6 counter drop
+	}
+
+
+	chain output {
+		type filter hook output priority raw; policy accept;
+
+		# stop local apps from emitting obvious spoof/bogons
+		ip saddr @bad_ipv4 counter drop
+		ip6 saddr @bad_ipv6 counter drop
 	}
 
 	chain prerouting_host {}

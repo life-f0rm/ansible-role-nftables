@@ -1,2 +1,69 @@
 # 00-vars.nft - common variables for nftables
 # this file is managed by ansible - do not edit manually
+
+define bad_ipv4 = {
+	192.0.0.0/24,         # rfc6890
+	192.0.2.0/24,         # rfc6890 documentation
+	198.51.100.0/24,      # rfc6890 documentation
+	203.0.113.0/24,       # rfc6890 documentation
+	240.0.0.0/4           # rfc6890 reserved
+}
+
+define not_global_ipv4 = {
+	0.0.0.0/8,            # rfc6890
+	10.0.0.0/8,           # rfc6890 private
+	100.64.0.0/10,        # rfc6890 cgnat
+    127.0.0.0/8,          # rfc6890 loopback
+	169.254.0.0/16,       # rfc6890 link-local
+	172.16.0.0/12,        # rfc6890 private
+	192.0.0.0/29,         # rfc6890
+	192.168.0.0/16,       # rfc6890 private
+	198.18.0.0/15,        # rfc6890 benchmark
+	255.255.255.255/32    # rfc6890 broadcast
+}
+
+define bad_src_ipv4 = {
+	224.0.0.0/4,          # multicast
+	255.255.255.255/32    # broadcast
+}
+
+define bad_dst_ipv4 = {
+	0.0.0.0/8,            # rfc6890
+	224.0.0.0/4           # multicast
+}
+
+define no_forward_ipv4 = {
+	0.0.0.0/8,            # rfc6890
+    127.0.0.0/8,          # rfc6890 loopback
+	169.254.0.0/16,       # rfc6890 link-local
+	224.0.0.0/4,          # multicast
+	255.255.255.255/32    # rfc6890 broadcast
+}
+
+define bad_ipv6 = {
+	::ffff:0:0/96,        # rfc6890 ipv4 mapped
+	2001::/23,            # rfc6890 (covers 2001:10::/28 orchid)
+	2001:db8::/32,         # rfc6890 documentation
+	::/96                 # ipv4 compat
+}
+
+define not_global_ipv6 = {
+	100::/64,             # rfc6890 discard-only
+	2001::/32,            # rfc6890 teredo
+	2001:2::/48,          # rfc6890 benchmark
+	fc00::/7              # rfc6890 unique-local
+}
+
+define bad_src_ipv6 = {
+	::/128,               # unspecified
+	ff00::/8              # multicast
+}
+
+define bad_dst_ipv6 = {
+	::/128                # unspecified
+}
+
+define no_forward_ipv6 = {
+	fe80::/10,            # rfc6890 link-scoped unicast
+	ff00::/8              # multicast
+}

@@ -1,26 +1,3 @@
 ---
-# nftables configuration structure:
-#
-# COMMON (common/*.nft):
-#   - 10-raw.nft: Populates prerouting_common chain with common RAW rules
-#   - 20-mangle.nft: Populates prerouting_common chain with common MANGLE rules
-#   - 30-nat.nft: Populates postrouting_common chain with common NAT rules
-#   - 60-filter.nft: Populates input_common/forward_common chains with common FILTER rules
-#   - This is COMMON POLICY - rules that apply to all routers
-#
-# SITE (20-sites/$SITE/*.nft):
-#   - 60-filter-add.nft: Populates input_site/forward_site chains with site-specific rules
-#   - This is SITE POLICY - rules that apply to all routers in this site
-#
-# HOST (30-hosts/$HOST/*.nft):
-#   - 10-raw-add.nft: Populates prerouting_host chain with host-specific RAW rules
-#   - 20-mangle-add.nft: Populates prerouting_host chain with host-specific MANGLE rules
-#   - 30-nat-add.nft: Populates postrouting_host chain with host-specific NAT rules
-#   - 60-filter-add.nft: Populates input_host/forward_host chains with host-specific FILTER rules
-#   - This is HOST POLICY - rules specific to this router
-#
-# NOTE: Sets are scoped per-table in nftables, so we must define/add elements to sets
-# in each table separately. The base defines common WAN interfaces, site/host add more.
-
 # Required per-host variable (kept empty by default to trigger assert)
 nftables_rules_site: ""

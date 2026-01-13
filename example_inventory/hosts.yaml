@@ -1,0 +1,22 @@
+all:
+  vars:
+    base_domain: example.com
+  children:
+    us-east: # Region
+      children:
+        az1: # Availability Zone
+          children:
+            s01: # Site
+              vars:
+                nftables_rules_site: "example-site01"
+              hosts:
+                example-router01:
+                  ansible_host: 127.0.0.1
+                example-router02:
+                  ansible_host: 127.0.0.2
+    routers:
+      hosts:
+        example-router01:
+        example-router02:
+
+
