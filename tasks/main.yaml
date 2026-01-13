@@ -49,8 +49,8 @@
     owner: root
     group: root
     mode: "0644"
-  loop: "{{ lookup('fileglob', role_path + '/files/common/*.nft', wantlist=True) | sort }}"
-  when: lookup('fileglob', role_path + '/files/common/*.nft', wantlist=True) | length > 0
+  loop: "{{ lookup('fileglob', nftables_rules_src_root + '/common/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', nftables_rules_src_root + '/common/*.nft', wantlist=True) | length > 0
   notify:
     - Validate nftables configuration
     - Reload nftables
@@ -62,8 +62,8 @@
     owner: root
     group: root
     mode: "0644"
-  loop: "{{ lookup('fileglob', role_path + '/files/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | sort }}"
-  when: lookup('fileglob', role_path + '/files/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | length > 0
+  loop: "{{ lookup('fileglob', nftables_rules_src_root + '/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', nftables_rules_src_root + '/sites/' + nftables_rules_site + '/*.nft', wantlist=True) | length > 0
   notify:
     - Validate nftables configuration
     - Reload nftables
@@ -75,8 +75,8 @@
     owner: root
     group: root
     mode: "0644"
-  loop: "{{ lookup('fileglob', role_path + '/files/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | sort }}"
-  when: lookup('fileglob', role_path + '/files/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | length > 0
+  loop: "{{ lookup('fileglob', nftables_rules_src_root + '/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | sort }}"
+  when: lookup('fileglob', nftables_rules_src_root + '/hosts/' + inventory_hostname + '/*.nft', wantlist=True) | length > 0
   notify:
     - Validate nftables configuration
     - Reload nftables

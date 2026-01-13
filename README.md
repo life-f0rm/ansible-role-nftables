@@ -17,21 +17,23 @@ The role:
 
 ## Rule layout and logic
 
-At runtime, the role expects rules to be present under the role’s `files/`
-directory:
+At runtime, the role expects rules to be present under a rules directory on the
+**controller**, pointed to by `nftables_rules_src_root`.
+
+- **Default**: `{{ playbook_dir }}/nftables_rules`
 
 1. **Common rules**: applied to **all** routers/hosts
-   - **Path**: `files/common/*.nft`
+   - **Path**: `{{ nftables_rules_src_root }}/common/*.nft`
    - **Deployed to**: `/etc/nftables.d/common/`
 
 2. **Site rules**: applied to all routers/hosts that belong to a given site
-   - **Path**: `files/sites/<site_name>/*.nft`
+   - **Path**: `{{ nftables_rules_src_root }}/sites/<site_name>/*.nft`
    - **Deployed to**: `/etc/nftables.d/site/`
    - The `<site_name>` is the value of the host variable
      `nftables_rules_site`.
 
 3. **Host rules**: applied only to a specific router/host
-   - **Path**: `files/hosts/<inventory_hostname>/*.nft`
+   - **Path**: `{{ nftables_rules_src_root }}/hosts/<inventory_hostname>/*.nft`
    - **Deployed to**: `/etc/nftables.d/host/`
    - `<inventory_hostname>` is the Ansible inventory hostname for that target.
 
@@ -45,26 +47,28 @@ The generated `/etc/nftables.conf` simply includes these directories:
 
 ## Example rules
 
-This repository ships with example rule sets under `example_rules/` to help you
-get started:
+This repository ships with example rule sets under `example_rules/` inside the
+role to help you get started:
 
 - `example_rules/common/*.nft`
 - `example_rules/sites/example-site01/*.nft`
 - `example_rules/hosts/example-router01/*.nft`
 
-To build your own rules:
+To build your own rules in your playbook/inventory repository:
 
-1. Copy the relevant example directories into `files/`:
-   - Copy `example_rules/common/*` to `files/common/`
+1. Create a `nftables_rules/` directory next to your playbook (or point
+   `nftables_rules_src_root` somewhere else if you prefer).
+2. Copy the relevant example directories into that rules directory:
+   - Copy `example_rules/common/*` to `nftables_rules/common/`
    - Copy `example_rules/sites/<your_site>/*` to
-     `files/sites/<your_site>/`
+     `nftables_rules/sites/<your_site>/`
    - Copy `example_rules/hosts/<your_host>/*` to
-     `files/hosts/<your_host>/`
-2. Adjust the `.nft` files to match your environment (interfaces, addresses,
+     `nftables_rules/hosts/<your_host>/`
+3. Adjust the `.nft` files to match your environment (interfaces, addresses,
    sets, etc.).
 
-The examples are **not** deployed automatically; only files under `files/`
-are used by the role.
+The examples are **not** deployed automatically; only files under
+`{{ nftables_rules_src_root }}` are used by the role.
 
 ---
 
@@ -73,10 +77,10 @@ are used by the role.
 Per host, you must define:
 
 - **`nftables_rules_site`**: the site identifier used to select which
-  `files/sites/<site_name>/` directory to deploy.
+  `{{ nftables_rules_src_root }}/sites/<site_name>/` directory to deploy.
 
 The role also relies on Ansible’s built-in `inventory_hostname` to select
-host-specific rules under `files/hosts/<inventory_hostname>/`.
+host-specific rules under `{{ nftables_rules_src_root }}/hosts/<inventory_hostname>/`.
 
 If `nftables_rules_site` is empty or undefined, the role will fail early with
 an assertion error.
@@ -121,8 +125,10 @@ all:
 
 **Make sure that**:
 
-- You have created the appropriate rule files under `files/common/`,
-  `files/sites/<site_name>/`, and/or `files/hosts/<inventory_hostname>/`.
+- You have created the appropriate rule files under
+  `{{ nftables_rules_src_root }}/common/`,
+  `{{ nftables_rules_src_root }}/sites/<site_name>/`, and/or
+  `{{ nftables_rules_src_root }}/hosts/<inventory_hostname>/`.
 - Each host defines `nftables_rules_site` in inventory or host vars.
 
 ---

@@ -1,3 +1,6 @@
 ---
 # Required per-host variable (kept empty by default to trigger assert)
 nftables_rules_site: ""
+
+# Where to read rule files from (on the controller)
+nftables_rules_src_root: "{{ playbook_dir }}/nftables_rules"
