@@ -9,10 +9,6 @@ table inet filter {
 		jump input_host
 		jump input_site
 
-	# add action=accept chain=input comment="defconf: accept ICMP after RAW" protocol=icmp
-	# add action=accept chain=input comment="defconf: accept established,related,untracked" connection-state=established,related,untracked
-	# add action=drop chain=input comment="defconf: drop all not coming from LAN" in-interface-list=!LAN
-
 	}
 
 	chain input_host {}

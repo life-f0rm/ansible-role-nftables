@@ -1,6 +1,14 @@
 # 00-vars.nft - site-specific variables for site0
 # this file is managed by ansible - do not edit manually
 
+define site_lan_networks = {
+	192.168.0.0/16,       # rfc6890 private
+	172.16.0.0/12,        # rfc6890 private
+	10.0.0.0/8,           # rfc6890 private
+}
+
+# add element inet sets lan_networks $site_lan_networks
+
 define site_lan_interfaces = {
 	"servers"
 }
@@ -12,3 +20,12 @@ define site_wan_interfaces = {
 define site_mgmnt = {
 	"mgmnt"
 }
+
+# Add set for interface matching in filter table (table already exists in common/60-filter.nft)
+# add set inet filter site_mgmnt { type ifname; elements = $site_mgmnt }
+
+# Populate shared inet interface/lannet sets
+add element inet sets wan_interfaces $site_wan_interfaces
+# add element inet sets lan_interfaces $site_lan_interfaces
+
+
