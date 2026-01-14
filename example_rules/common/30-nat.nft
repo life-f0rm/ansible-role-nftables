@@ -1,12 +1,19 @@
 # 30-nat.nft - common nat table rules
 # this file is managed by ansible - do not edit manually
 
-table ip nat {
+table inet nat {
+
+	# interface groups (list is defined here, interfaces are defined per router)
+	set wan_interfaces {
+		type ifname
+	}
+
 	chain postrouting {
-		type nat hook postrouting priority 100; policy accept;
+		type nat hook postrouting priority srcnat; policy accept;
 		# jump to layer chains (host then site in order)
 		jump postrouting_host
 		jump postrouting_site
+		meta nfproto ipv4 oifname @wan_interfaces masquerade
 	}
 
 	chain postrouting_host {}

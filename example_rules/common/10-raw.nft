@@ -69,6 +69,9 @@ table inet raw {
 		# drop bad udp (port 0, universal)
 		udp sport 0 counter drop
 		udp dport 0 counter drop
+
+		# jump to tcp validation chain (universal)
+		meta l4proto tcp jump bad_tcp
 	}
 
 	chain raw_ip4 {
@@ -97,6 +100,24 @@ table inet raw {
 		ip6 daddr @not_global_ipv6 counter drop
 	}
 
+	# tcp validation chain
+	chain bad_tcp {
+		# drop invalid tcp flag combinations
+		# tcp flags & (fin|syn|rst|ack) != (syn|ack|fin|rst) counter drop
+		# null scan
+		tcp flags & (fin|syn|rst|psh|ack|urg) == 0 counter drop
+		# syn+fin, syn+rst, fin+rst, fin+urg, rst+urg
+		tcp flags & (fin|syn) == (fin|syn) counter drop
+		tcp flags & (fin|rst) == (fin|rst) counter drop
+		tcp flags & (fin|urg) == (fin|urg) counter drop
+		tcp flags & (syn|rst) == (syn|rst) counter drop
+		tcp flags & (rst|urg) == (rst|urg) counter drop
+		# fin without ack
+		tcp flags & (fin|ack) == fin counter drop
+		# drop tcp port 0
+		tcp sport 0 counter drop
+		tcp dport 0 counter drop
+	}
 
 	chain output {
 		type filter hook output priority raw; policy accept;

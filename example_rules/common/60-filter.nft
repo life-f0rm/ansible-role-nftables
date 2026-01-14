@@ -5,7 +5,7 @@
 table inet filter {
 
 	chain input {
-		type filter hook input priority 0; policy drop;
+		type filter hook input priority filter; policy drop;
 		jump input_host
 		jump input_site
 
@@ -19,14 +19,14 @@ table inet filter {
 	chain input_site {}
 
 	chain forward {
-		type filter hook forward priority 0; policy drop;
+		type filter hook forward priority filter; policy drop;
 	}
 
 	chain forward_host {}
 	chain forward_site {}
 
 	chain output {
-		type filter hook output priority 0; policy accept;
+		type filter hook output priority filter; policy accept;
 	}
 
 	chain output_host {}

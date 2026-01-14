@@ -4,9 +4,8 @@
 # mangle table - connection tracking and marking (after raw/conntrack, priority -150)
 table inet mangle {
 
-
 	chain prerouting {
-		type filter hook prerouting priority -150; policy accept;
+		type filter hook prerouting priority mangle; policy accept;
 		# jump to layer chains (host then site in order)
 		jump prerouting_host
 		jump prerouting_site
@@ -16,7 +15,7 @@ table inet mangle {
 	chain prerouting_site {}
 
 	chain output {
-		type route hook output priority -150; policy accept;
+		type route hook output priority mangle; policy accept;
 		# jump to layer chains (host then site in order)
 		jump output_host
 		jump output_site
